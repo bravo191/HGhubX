@@ -748,6 +748,7 @@ export default function Feed({
         rotated={rotated} clean={clean} currentQuality={playUrl ? (preferHevc && hevcUrl && playUrl === hevcUrl ? "HD" : "SD") : null}
         searchLabel={kind === "post" ? tr("搜吃瓜帖") : tr("搜短剧")}
         onSearch={mode === "context" ? () => { closePanels(); setSearching(true); } : undefined}
+        onPip={togglePip}
       />
       {searching && mode === "context" && active && (
         <InplaceSearch kind={kind} wide={isDesktop} onClose={() => setSearching(false)}

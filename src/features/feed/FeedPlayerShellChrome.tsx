@@ -345,7 +345,7 @@ export function FeedPlayerShellChrome({
 }
 
 export function FeedMobileTopTools({
-  isDesktop, controlsLocked, active, fs, idle, rotated, clean, currentQuality, searchLabel, onSearch,
+  isDesktop, controlsLocked, active, fs, idle, rotated, clean, currentQuality, searchLabel, onSearch, onPip,
 }: {
   isDesktop: boolean;
   controlsLocked: boolean;
@@ -357,6 +357,7 @@ export function FeedMobileTopTools({
   currentQuality: "HD" | "SD" | null;
   searchLabel?: string;
   onSearch?: () => void;
+  onPip?: () => void;
 }) {
   if (isDesktop || controlsLocked || !active || (fs && idle) || (!fs && clean)) return null;
   return (
@@ -369,6 +370,9 @@ export function FeedMobileTopTools({
         <ISearch size={14} /><span>{searchLabel ?? tr("搜索")}</span>
       </Button>}
       {currentQuality && <span className="feed-current-quality" aria-label={tr("当前清晰度：{0}", currentQuality === "HD" ? tr("高清") : tr("标清"))}>{currentQuality}</span>}
+      {onPip && !fs && <Button type="button" aria-label={tr("画中画")} onClick={onPip} className="feed-current-quality pressable">
+        <IPip size={13} /><span>{tr("画中画")}</span>
+      </Button>}
     </div>
   );
 }
