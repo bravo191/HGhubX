@@ -31,7 +31,7 @@ fn set_text_interaction(inner: *mut c_void, enabled: bool) {
     }
 }
 
-/// iPhone/iPad：允许 WebView 媒体进入系统画中画。`allowsPictureInPicturePlayback`
+/// iPhone/iPad：允许 WebView 媒体进入系统画中画。`allowsPictureInPictureMediaPlayback`
 /// 默认为 false，不开的话系统播放器不出现画中画入口，
 /// `webkitSetPresentationMode("picture-in-picture")` 也不会生效。
 /// 与 `set_text_interaction` 同机制：创建后运行时设置（WebKit 对该配置实测有效）。
@@ -42,7 +42,15 @@ pub(crate) fn set_pip_on_webview(webview: &tauri::Webview, enabled: bool) {
                 return;
             };
             let config: Retained<WKWebViewConfiguration> = msg_send![view, configuration];
-            let _: () = msg_send![&config, setAllowsPictureInPicturePlayback: enabled];
+            // 未知 selector 会抛 doesNotRecognizeSelector 并终止进程，先 respondsToSelector 防御。
+            extern "C" {
+                fn sel_registerName(name: *const c_char) -> *mut c_void;
+            }
+            let sel_set = sel_registerName(b"setAllowsPictureInPictureMediaPlayback:\0".as_ptr() as *const c_char);
+            let responds: bool = msg_send![&config, respondsToSelector: sel_set];
+            if responds {
+                let _: () = msg_send![&config, setAllowsPictureInPictureMediaPlayback: enabled];
+            }
         }
     });
 }
