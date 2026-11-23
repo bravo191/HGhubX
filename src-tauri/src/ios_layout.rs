@@ -31,6 +31,22 @@ fn set_text_interaction(inner: *mut c_void, enabled: bool) {
     }
 }
 
+/// iPhone/iPad：允许 WebView 媒体进入系统画中画。`allowsPictureInPicturePlayback`
+/// 默认为 false，不开的话系统播放器不出现画中画入口，
+/// `webkitSetPresentationMode("picture-in-picture")` 也不会生效。
+/// 与 `set_text_interaction` 同机制：创建后运行时设置（WebKit 对该配置实测有效）。
+pub(crate) fn set_pip_on_webview(webview: &tauri::Webview, enabled: bool) {
+    let _ = webview.with_webview(move |platform| {
+        unsafe {
+            let Some(view) = platform.inner().cast::<UIView>().as_ref() else {
+                return;
+            };
+            let config: Retained<WKWebViewConfiguration> = msg_send![view, configuration];
+            let _: () = msg_send![&config, setAllowsPictureInPicturePlayback: enabled];
+        }
+    });
+}
+
 pub(crate) fn apply(webview: &tauri::Webview, nudge_frame: bool) {
     let Ok(dir) = webview.app_handle().path().app_data_dir() else {
         return;

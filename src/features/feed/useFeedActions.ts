@@ -8,6 +8,13 @@ import { tr } from "../../shared/i18n";
 /* Action confirmations share the player hint slot so rapid taps replace instead of stacking. */
 const ACTION_TOAST_SLOT = "playback-hint";
 
+/// iOS Safari/WKWebView 的 webkit 演示模式 API（标准 PiP API 在 iOS 上不实现）。
+type WebkitPipVideo = HTMLVideoElement & {
+  webkitSupportsPresentationMode?: (mode: string) => boolean;
+  webkitSetPresentationMode?: (mode: "inline" | "picture-in-picture") => void;
+  webkitPresentationMode?: string;
+};
+
 export type FeedMeta = {
   title: string;
   cover: string;
@@ -119,9 +126,18 @@ export function useFeedActions({
 
   const togglePip = async () => {
     try {
-      const v = videoRef.current?.el();
+      const v = videoRef.current?.el() as (HTMLVideoElement & WebkitPipVideo) | null;
+      if (!v) return;
+      // iOS Safari/WKWebView 不实现标准 PiP API（document.pictureInPicture* /
+      // requestPictureInPicture），只能走 webkit 演示模式；需壳层先打开
+      // allowsPictureInPicturePlayback（src-tauri/src/ios_layout.rs）。
+      if (typeof v.webkitSetPresentationMode === "function"
+        && v.webkitSupportsPresentationMode?.("picture-in-picture")) {
+        v.webkitSetPresentationMode(v.webkitPresentationMode === "picture-in-picture" ? "inline" : "picture-in-picture");
+        return;
+      }
       if (document.pictureInPictureElement) await document.exitPictureInPicture();
-      else if (v && document.pictureInPictureEnabled) await v.requestPictureInPicture();
+      else if (document.pictureInPictureEnabled) await v.requestPictureInPicture();
       else toast(tr("当前环境不支持画中画"), "info");
     } catch { toast(tr("画中画开启失败"), "info"); }
   };

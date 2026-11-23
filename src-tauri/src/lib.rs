@@ -95,6 +95,8 @@ pub fn run() {
                     // 默认关闭 WKWebView 文本交互，消除视频长按快进时的系统放大镜。
                     // 前端在输入框聚焦时再按需打开（见 api::set_text_interaction）。
                     ios_layout::set_text_interaction_on_webview(webview, false);
+                    // 允许 WebView 媒体进入系统画中画（默认 false，前端播放器提供入口）。
+                    ios_layout::set_pip_on_webview(webview, true);
                     let wv = (*webview).clone();
                     tauri::async_runtime::spawn(async move {
                         for delay_ms in [80_u64, 350] {

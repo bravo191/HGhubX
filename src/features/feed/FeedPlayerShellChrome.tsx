@@ -12,7 +12,7 @@ import { PlaybackSettingsPanel } from "./PlaybackSettingsPanel";
 import { PanelSwipeArea } from "./PanelSwipeArea";
 import { HOLD_SPEED_STEPS } from "./mobileHold";
 import {
-  IBoltF, IClose, ICompress, IPauseF, IPlayF, ISearch,
+  IBoltF, IClose, ICompress, IPauseF, IPip, IPlayF, ISearch,
 } from "../../shared/ui/icons";
 import { tr } from "../../shared/i18n";
 
@@ -254,6 +254,10 @@ export function FeedPlayerShellChrome({
               }}
               className={`ml-auto shrink-0 flex items-center gap-1 px-2.5 h-8 rounded-full text-[13px] font-bold pressable ${effRate !== 1 ? "bg-white text-[#191919]" : "hg-chip hg-ink-2"}`}>
               <IBoltF size={12} />{effRate}x
+            </Button>
+            <Button onClick={() => void togglePip()} aria-label={tr("画中画")}
+              className="hg-chip shrink-0 w-8 h-8 rounded-full flex items-center justify-center pressable">
+              <IPip size={16} />
             </Button>
             <Button onClick={exitFs} aria-label={tr("退出全屏")}
               className="mobile-fs-exit hg-chip shrink-0 w-8 h-8 rounded-full flex items-center justify-center pressable">
