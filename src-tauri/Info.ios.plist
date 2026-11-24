@@ -2,6 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+  <!-- 声明横屏支持：`set_orientation` 的 requestGeometryUpdate 只有在方向属于
+       App 支持集时才会生效，否则横屏视频全屏时物理旋转永远失败，
+       只能依赖 CSS 90° 旋转兜底（竖屏视图下画面裁切、控制行不可见）。 -->
+  <key>UISupportedInterfaceOrientations</key>
+  <array>
+    <string>UIInterfaceOrientationPortrait</string>
+    <string>UIInterfaceOrientationLandscapeLeft</string>
+    <string>UIInterfaceOrientationLandscapeRight</string>
+  </array>
   <!-- Tauri merges this into the generated app before every iOS build.
        iOS 17+ applies ATS to IP addresses; only the native media loopback
        transport needs an HTTP exception. Earlier iOS versions allow IPs. -->
