@@ -36,6 +36,7 @@ fn set_text_interaction(inner: *mut c_void, enabled: bool) {
 /// `webkitSetPresentationMode("picture-in-picture")` 也不会生效。
 /// 与 `set_text_interaction` 同机制：创建后运行时设置（WebKit 对该配置实测有效）。
 pub(crate) fn set_pip_on_webview(webview: &tauri::Webview, enabled: bool) {
+    use std::ffi::c_char;
     let _ = webview.with_webview(move |platform| {
         unsafe {
             let Some(view) = platform.inner().cast::<UIView>().as_ref() else {
